@@ -21,8 +21,10 @@ pipeline {
         }
         stage("Build and Push Docker Image") {
             steps {
-                git 'https://github.com/efreetsultan/basic_expressJs_for_ci-cd'
-                sh "cd node-express-app && docker build -t ${ECR_REGISTRY}/${IMAGE_NAME} . && docker push ${ECR_REGISTRY}/${IMAGE_NAME}"
+                sh "docker build -t hello-jenkins ."
+                sh "docker tag hello-jenkins $IMAGE_NAME"
+                sh "docker push $IMAGE_NAME"
+                sh "docker save hello-jenkins -o hello-jenkins.tar"
             }
         }
         stage("Assume EKS Role") {
@@ -34,8 +36,14 @@ pipeline {
         }
         stage("Deploy to EKS") {
             steps {
+                 sh "docker load -i hello-jenkins.tar"
                 sh "kubectl apply -f k8s/app.yaml"
             }
+        }
+    }
+    post {
+        success {
+            sh "kubectl get svc -o wide"
         }
     }
 }
