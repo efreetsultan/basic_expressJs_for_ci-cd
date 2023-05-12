@@ -1,45 +1,70 @@
 pipeline {
     agent any
     triggers {
-        branch 'master'
+        branch 'main'
     }
     environment {
-        ECR_REGISTRY = "837009352646.dkr.ecr.eu-west-2.amazonaws.com/hello-jenkins"
-        IMAGE_NAME = "837009352646.dkr.ecr.eu-west-2.amazonaws.com/hello-jenkins:latest"
-        EKS_CLUSTER = "eks"
-        AWS_REGION = "us-west-2"
-        ECR_ROLE_ARN = "" // here goes the ecr policy arn
-        EKS_ROLE_ARN = "arn:aws:iam::837009352646:role/eks_cluster_policy"
+        AWS_REGION = "eu-west-2"
     }
     stages {
-        stage("Assume ECR Role") {
+        stage('Checkout') {
             steps {
-                withRole(role: "${ECR_ROLE_ARN}", durationSeconds: 3600) {
-                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
+                git url: 'https://github.com/efreetsultan/basic_expressJs_for_ci-cd.git'
+            }
+        }
+        stage('Terraform') {
+            steps {
+                sh 'terraform init'
+                sh 'terraform plan'
+                sh 'terraform apply -auto-approve'
+
+                script {
+          ECR_REPOSITORY_NAME = sh(script: 'terraform output ecr_repository_name', returnStdout: true).trim()
+          ECR_REGISTRY_URL = sh(script: 'terraform output ecr_registry_url', returnStdout: true).trim()
+          EKS_CLUSTER_NAME = sh(script: 'terraform output eks_cluster_name', returnStdout: true).trim()
+          
+          env.ECR_REGISTRY = "${ECR_REGISTRY_URL}/${ECR_REPOSITORY_NAME}"
+          env.IMAGE_NAME = "${ECR_REGISTRY_URL}/${ECR_REPOSITORY_NAME}:latest"
+          env.EKS_CLUSTER = "${EKS_CLUSTER_NAME}"
+        }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                dir('backend') {
+                    sh 'docker build -t hello-jenkins .'
+                    sh 'docker tag hello-jenkins $IMAGE_NAME'
                 }
             }
         }
-        stage("Build and Push Docker Image") {
+        stage('Run Tests') {
             steps {
-                sh "docker build -t hello-jenkins ."
-                sh "docker tag hello-jenkins $IMAGE_NAME"
-                sh "docker push $IMAGE_NAME"
-                sh "docker save hello-jenkins -o hello-jenkins.tar"
-            }
-        }
-        stage("Assume EKS Role") {
-            steps {
-                withRole(role: "${EKS_ROLE_ARN}", durationSeconds: 3600) {
-                    sh "aws eks update-kubeconfig --name ${EKS_CLUSTER}"
+                dir('test') {
+                    sh 'docker run --rm -v $(pwd):/app -w /app node:14 npm install'
+                    sh 'docker run --rm -v $(pwd):/app -w /app node:14 npm test'
                 }
             }
         }
-        stage("Deploy to EKS") {
+        stage('Push Docker Image') {
             steps {
-                 sh "docker load -i hello-jenkins.tar"
-                sh "kubectl apply -f k8s/app.yaml"
+                dir('app') {
+                    sh "docker push $IMAGE_NAME"
+                    sh "docker save hello-jenkins -o hello-jenkins.tar"
+                }
             }
         }
+        stage('Deploy to EKS') {
+    when {
+        allOf {
+            expression { currentBuild.result == 'SUCCESS' }
+            expression { sh(script: 'npm run test-coverage | grep "Coverage: 100%"', returnStatus: true) == 0 }
+        }
+    }
+    steps {
+        sh "docker load -i app/hello-jenkins.tar"
+        sh "kubectl apply -f k8s/app.yaml"
+    }
+}
     }
     post {
         success {
