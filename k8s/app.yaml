@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: hello-jenkins
-        image: 837009352646.dkr.ecr.eu-west-2.amazonaws.com/hello-jenkins
+        image: ${output.ecr_repository_url}
         ports:
         - containerPort: 3000
       imagePullSecrets:
