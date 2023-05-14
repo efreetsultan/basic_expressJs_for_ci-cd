@@ -6,6 +6,9 @@ This is a basic ExpressJS application that has one endpoint that returns a strin
 
 ### Prerequisites
 
+Used technologies:
+[![My Skills](https://skillicons.dev/icons?i=js,aws,bash,docker,git,jenkins,kubernetes)](https://skillicons.dev)
+
 Before you begin, make sure you have the following:
 
 - Node.js
