@@ -2,12 +2,23 @@
 
 This is a basic ExpressJS application that has one endpoint that returns a string.
 
+### Used technologies:<br>
+
+
+|  |  |
+| --- | --- |
+| Javascript/NodeJs | [![My Skills](https://skillicons.dev/icons?i=nodejs)](https://skillicons.dev) |
+| Amazon Web Service | [![My Skills](https://skillicons.dev/icons?i=aws)](https://skillicons.dev) |
+| Docker | [![My Skills](https://skillicons.dev/icons?i=docker)](https://skillicons.dev) |
+| Git | [![My Skills](https://skillicons.dev/icons?i=git)](https://skillicons.dev) |
+| Bash scripting | [![My Skills](https://skillicons.dev/icons?i=bash)](https://skillicons.dev) |
+| Jenkins | [![My Skills](https://skillicons.dev/icons?i=jenkins)](https://skillicons.dev) |
+| Kubernetes | [![My Skills](https://skillicons.dev/icons?i=kubernetes)](https://skillicons.dev) |
+| Terraform | [![My Skills](https://skillicons.dev/icons?i=terraform)](https://skillicons.dev) |
+
 ## Getting Started
 
 ### Prerequisites
-
-Used technologies:
-[![My Skills](https://skillicons.dev/icons?i=js,aws,bash,docker,git,jenkins,kubernetes)](https://skillicons.dev)
 
 Before you begin, make sure you have the following:
 
