@@ -85,13 +85,20 @@ variable "availability_zones" {
   default     = ["eu-west-2a", "eu-west-2b"]
 }
 
-variable "s3_bucker_name" {
-  description = "This is the name of the S3 bucket"
-  default = "s3forexpressapp"
+variable "app_name" {
+  type        = string
+  description = "The name of the application."
 }
 
-variable "dynamo_table_name" {
-  description = "This is the name of the DynamoDb table"
-  default = "dynamo_table_name_for_my_app"
+variable "env_name" {
+  type        = string
+  description = "The name of the environment."
 }
+
+variable "aws_region" {
+  type        = string
+  description = "The AWS region where the resources will be created."
+  default     = "eu-west-2"
+}
+
 
