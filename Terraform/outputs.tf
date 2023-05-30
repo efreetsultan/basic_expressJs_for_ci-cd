@@ -28,3 +28,7 @@ output "private_subnet_ids" {
   description = "The IDs of the private subnets."
 }
 
+output "aurora_cluster_endpoint" {
+  value = aws_rds_cluster.aurora_cluster.endpoint
+}
+
