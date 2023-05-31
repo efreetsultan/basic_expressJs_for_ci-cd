@@ -1,5 +1,5 @@
 resource "aws_secretsmanager_secret" "aurora_db_credentials" {
-  name = "aurora-db-credentials"
+  name = "aurora-db-credentials-new"
 }
 
 resource "aws_secretsmanager_secret_version" "aurora_db_credentials_version" {
