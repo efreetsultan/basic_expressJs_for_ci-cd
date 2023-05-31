@@ -85,15 +85,15 @@ variable "availability_zones" {
   default     = ["eu-west-2a", "eu-west-2b"]
 }
 
-variable "app_name" {
-  type        = string
-  description = "The name of the application."
-}
+# variable "app_name" {
+#   type        = string
+#   description = "The name of the application."
+# }
 
-variable "env_name" {
-  type        = string
-  description = "The name of the environment."
-}
+# variable "env_name" {
+#   type        = string
+#   description = "The name of the environment."
+# }
 
 variable "aws_region" {
   type        = string
