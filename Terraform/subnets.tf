@@ -23,14 +23,4 @@ resource "aws_subnet" "private" {
   }
 }
 
-# resource "aws_default_subnet" "default" {
-#   availability_zone = "eu-west-2a"
-#   vpc_id            = aws_vpc.main.id
-#   # map_public_ip_on_launch = true
-
-#   tags = {
-#     Name = "default-subnet"
-#   }
-# }
-
 
