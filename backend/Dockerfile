@@ -3,5 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-EXPOSE 3000
-CMD [ "node", "express.js" ]
+COPY schema.js ./
+EXPOSE 3003
+CMD ["sh", "-c", "node schema.js && node express.js"]
+

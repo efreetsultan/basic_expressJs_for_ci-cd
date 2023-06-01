@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-jenkins-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-jenkins-backend
+  template:
+    metadata:
+      labels:
+        app: hello-jenkins-backend
+    spec:
+      containers:
+        - name: hello-jenkins-backend
+          image: 837009352646.dkr.ecr.eu-west-2.amazonaws.com/ecr_server:latest
+          ports:
+            - containerPort: 3003
+          command: ["sh", "-c"]
+          args: ["node schema.js && node express.js"]
+      imagePullSecrets:
+        - name: aws-ecr-registry-key
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-jenkins-backend
+spec:
+  selector:
+    app: hello-jenkins-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3003
+  type: LoadBalancer

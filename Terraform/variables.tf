@@ -104,9 +104,11 @@ variable "aws_region" {
 variable "db_master_username" {
   description = "Master username for the database"
   type        = string
+  sensitive = true
 }
 
 variable "db_master_password" {
   description = "Master password for the database"
   type        = string
+  sensitive = true
 }

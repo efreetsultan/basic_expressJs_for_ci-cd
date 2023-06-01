@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket         = "${var.app_name}-${var.env_name}"
+    bucket         = "somebucketformythings"
     key            = "terraform.tfstate"
-    region         = "${var.aws_region}"
-    dynamodb_table = "${var.app_name}-${var.env_name}"
+    region         = "eu-west-2"
+    dynamodb_table = "somebucketformythings"
     encrypt        = true
   }
 }
