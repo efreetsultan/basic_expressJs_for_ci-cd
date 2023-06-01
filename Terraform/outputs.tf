@@ -1,15 +1,30 @@
-output "ecr_repository_url" {
-  value       = aws_ecr_repository.example.repository_url
+output "ecr_repository_url_server" {
+  value       = aws_ecr_repository.repo1.repository_url
   description = "The URL of the ECR repository."
 }
 
-output "ecr_repository_arn" {
-  value       = aws_ecr_repository.example.arn
+output "ecr_repository_url_client" {
+  value       = aws_ecr_repository.repo2.repository_url
+  description = "The URL of the ECR repository."
+}
+
+output "ecr_repository_arn_server" {
+  value       = aws_ecr_repository.repo1.arn
   description = "The ARN of the ECR repository."
 }
 
-output "ecr_repository_name" {
-  value       = aws_ecr_repository.example.name
+output "ecr_repository_arn_client" {
+  value       = aws_ecr_repository.repo2.arn
+  description = "The ARN of the ECR repository."
+}
+
+output "ecr_repository_name_server" {
+  value       = aws_ecr_repository.repo1.name
+  description = "The name of the ECR repository."
+}
+
+output "ecr_repository_name_client" {
+  value       = aws_ecr_repository.repo2.name
   description = "The name of the ECR repository."
 }
 
@@ -28,7 +43,7 @@ output "private_subnet_ids" {
   description = "The IDs of the private subnets."
 }
 
-output "aurora_cluster_endpoint" {
-  value = aws_rds_cluster.aurora_cluster.endpoint
+output "aurora_instance_endpoint" {
+  value = aws_db_instance.aurora_instance.endpoint
 }
 
