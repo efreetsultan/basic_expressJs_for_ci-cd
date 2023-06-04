@@ -47,3 +47,12 @@ output "aurora_instance_endpoint" {
   value = aws_db_instance.aurora_instance.endpoint
 }
 
+output "bastion_host_ip" {
+  value = aws_instance.bastion_host.public_ip
+}
+
+output "private_instance_ip" {
+  value = aws_instance.private_instance.private_ip
+}
+
+

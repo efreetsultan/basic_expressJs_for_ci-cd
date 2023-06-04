@@ -112,3 +112,8 @@ variable "db_master_password" {
   type        = string
   sensitive = true
 }
+
+variable "s3_client" {
+  description = "The name of the s3 bucket used for hosting the client"
+  default = "abucketforreact"
+}

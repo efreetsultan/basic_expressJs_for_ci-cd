@@ -11,6 +11,31 @@ resource "aws_security_group" "aurora_instance_sg" {
   }
 }
 
+resource "aws_security_group" "private_instance_sg" {
+  name        = "private-instance-security-group"
+  description = "Security group for private EC2 instance"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    security_groups = [aws_security_group.bastion_sg.id]
+  }
+}
+
+resource "aws_security_group" "bastion_sg" {
+  name        = "bastion-security-group"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [data.http.my_ip.body]
+  }
+}
+
 # resource "aws_security_group" "lb" {
 #   name        = "lb-security-group"
 #   description = "Security group for the load balancer"

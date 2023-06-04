@@ -26,13 +26,3 @@ resource "aws_eks_node_group" "workers" {
     version = aws_launch_template.this.latest_version
   }
 }
-
-data "aws_ami" "eks_worker" {
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-*"]
-  }
-
-  most_recent = true
-  owners      = ["602401143452"] # Amazon EKS AMI account ID
-}
