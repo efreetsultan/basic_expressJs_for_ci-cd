@@ -60,10 +60,41 @@ pipeline {
             expression { sh(script: 'npm run test-coverage | grep "Coverage: 100%"', returnStatus: true) == 0 }
         }
     }
-    steps {
-        sh "docker load -i app/hello-jenkins.tar"
-        sh "kubectl apply -f k8s/app.yaml"
-    }
+            steps {
+                sh "docker load -i app/hello-jenkins.tar"
+                sh "kubectl apply -f k8s/backend.yaml"
+            }
+
+        stage('Delete S3 Bucket Contents') {
+            steps {
+                script {
+                S3_BUCKET_NAME = sh(script: 'terraform output s3_for_hosting', returnStdout: true).trim()
+                withAWS(region: env.AWS_REGION) {
+                    sh "aws s3 rm s3://${S3_BUCKET_NAME} --recursive"
+                }
+                }
+            }
+        }
+        
+        stage('Build React App') {
+            steps {
+                dir('client') {
+                sh 'npm install'
+                sh 'npm run build'
+                }
+            }
+        }
+        
+        stage('Upload Build Folder to S3') {
+            steps {
+                script {
+                S3_BUCKET_NAME = sh(script: 'terraform output s3_for_hosting', returnStdout: true).trim()
+                withAWS(region: env.AWS_REGION) {
+                    sh "aws s3 sync build/ s3://${S3_BUCKET_NAME}"
+                }
+                }
+            }
+        }
 }
     }
     post {

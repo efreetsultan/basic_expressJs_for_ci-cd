@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 function App() {
   const [inputValue, setInputValue] = useState('');
-  const [responseData, setResponseData] = useState('');
+  const [responseData, setResponseData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -12,7 +12,7 @@ function App() {
     setError('');
 
     try {
-      const response = await fetch('/api/save-data', {
+      const response = await fetch('http://aeacfd459ba2644f3971508da638e16f-118745011.eu-west-2.elb.amazonaws.com:80/api/save-data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,7 +25,8 @@ function App() {
       }
 
       const data = await response.json();
-      setResponseData(data.id);
+      setResponseData([...responseData, { id: data.id, input_value: inputValue }]);
+      setInputValue('');
     } catch (error) {
       setError('An error occurred while saving data');
     } finally {
@@ -33,9 +34,38 @@ function App() {
     }
   };
 
+  const handleDelete = async () => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('http://aeacfd459ba2644f3971508da638e16f-118745011.eu-west-2.elb.amazonaws.com:80/api/delete-data', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ inputValue }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error deleting data');
+      }
+
+      const data = await response.json();
+      if (response.status === 200) {
+        setResponseData(responseData.filter((item) => item.input_value !== inputValue));
+        setInputValue('');
+      }
+    } catch (error) {
+      setError('An error occurred while deleting data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const fetchData = async () => {
     try {
-      const response = await fetch('/api/data');
+      const response = await fetch('http://aeacfd459ba2644f3971508da638e16f-118745011.eu-west-2.elb.amazonaws.com:80/api/data');
       if (!response.ok) {
         throw new Error('Error fetching data');
       }
@@ -65,20 +95,20 @@ function App() {
         <button type="submit" disabled={isLoading}>
           {isLoading ? 'Loading...' : 'Submit'}
         </button>
+        <button onClick={handleDelete} disabled={isLoading}>
+          {isLoading ? 'Deleting...' : 'Delete'}
+        </button>
       </form>
 
       {error && <p>{error}</p>}
-      {responseData && (
-        <div>
-          <p>Response: {responseData}</p>
-          <button onClick={fetchData}>Fetch Data</button>
-          <ul>
-            {responseData.map((item) => (
-              <li key={item.id}>{item.input_value}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div>
+        <button onClick={fetchData}>List Database Elements</button>
+        <ul>
+          {responseData.map((item) => (
+            <li key={item.id}>{item.input_value}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
