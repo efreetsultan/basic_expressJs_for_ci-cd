@@ -23,7 +23,7 @@ data "aws_ami" "eks_worker" {
   }
 
   most_recent = true
-  owners      = ["602401143452"] # Amazon EKS AMI account ID
+  owners      = ["602401143452"]
 }
 
 data "aws_iam_policy_document" "node_assume_role_policy" {

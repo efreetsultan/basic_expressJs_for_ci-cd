@@ -17,6 +17,11 @@ spec:
           image: 837009352646.dkr.ecr.eu-west-2.amazonaws.com/ecr_server:latest
           ports:
             - containerPort: 3003
+<<<<<<< HEAD
+=======
+          command: ["sh", "-c"]
+          args: ["node schema.js && node express.js"]
+>>>>>>> 40d89e2f26e53ec3c65dce27da44d3b8f9f13bdf
       imagePullSecrets:
         - name: aws-ecr-registry-key
 

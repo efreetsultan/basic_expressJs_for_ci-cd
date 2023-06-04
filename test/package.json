@@ -52,7 +52,10 @@
     "is-number": "^7.0.0",
     "is-plain-obj": "^2.1.0",
     "is-unicode-supported": "^0.1.0",
+<<<<<<< HEAD
     "jest": "^29.5.0",
+=======
+>>>>>>> 40d89e2f26e53ec3c65dce27da44d3b8f9f13bdf
     "js-yaml": "^4.1.0",
     "locate-path": "^6.0.0",
     "log-symbols": "^4.1.0",
@@ -67,7 +70,10 @@
     "path-exists": "^4.0.0",
     "path-is-absolute": "^1.0.1",
     "pathval": "^1.1.1",
+<<<<<<< HEAD
     "pg": "^8.11.0",
+=======
+>>>>>>> 40d89e2f26e53ec3c65dce27da44d3b8f9f13bdf
     "picomatch": "^2.3.1",
     "randombytes": "^2.1.0",
     "readdirp": "^3.6.0",
