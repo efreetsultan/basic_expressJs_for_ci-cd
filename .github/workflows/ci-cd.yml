@@ -1,0 +1,100 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: "eu-west-2"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      - name: Get Terraform Outputs
+        id: terraform_outputs
+        run: |
+          echo "::set-output name=ecr_repository_name::$(terraform output -raw ecr_repository_name)"
+          echo "::set-output name=ecr_registry_url::$(terraform output -raw ecr_registry_url)"
+          echo "::set-output name=eks_cluster_name::$(terraform output -raw eks_cluster_name)"
+          echo "::set-output name=s3_for_hosting::$(terraform output -raw s3_for_hosting)"
+
+      - name: Set Dynamic Outputs
+        id: dynamic_outputs
+        run: |
+          echo "::set-output name=ECR_REGISTRY::${{ steps.terraform_outputs.outputs.ecr_registry_url }}/${{ steps.terraform_outputs.outputs.ecr_repository_name }}"
+          echo "::set-output name=IMAGE_NAME::${{ steps.terraform_outputs.outputs.ecr_registry_url }}/${{ steps.terraform_outputs.outputs.ecr_repository_name }}:latest"
+          echo "::set-output name=EKS_CLUSTER::${{ steps.terraform_outputs.outputs.eks_cluster_name }}"
+          echo "::set-output name=S3_BUCKET_NAME::${{ steps.terraform_outputs.outputs.s3_for_hosting }}"
+
+      - name: Build Docker Image
+        working-directory: backend
+        run: |
+          docker build -t hello-jenkins .
+          docker tag hello-jenkins ${{ steps.dynamic_outputs.outputs.IMAGE_NAME }}
+
+      - name: Run Tests
+        working-directory: test
+        run: |
+          docker run --rm -v $(pwd):/app -w /app node:14 npm install
+          docker run --rm -v $(pwd):/app -w /app node:14 npm test
+
+      - name: Push Docker Image
+        working-directory: app
+        run: |
+          docker push ${{ steps.dynamic_outputs.outputs.IMAGE_NAME }}
+          docker save hello-jenkins -o hello-jenkins.tar
+
+      - name: Deploy to EKS
+        if: success() && contains(runner.job.status, 'completed')
+        run: |
+          docker load -i app/hello-jenkins.tar
+          kubectl apply -f k8s/backend.yaml
+
+      - name: Delete S3 Bucket Contents
+        if: success() && contains(runner.job.status, 'completed')
+        run: |
+          aws s3 rm s3://${{ steps.dynamic_outputs.outputs.S3_BUCKET_NAME }} --recursive
+
+      - name: Build React App
+        working-directory: client
+        run: |
+          npm install
+          npm run build
+
+      - name: Upload Build Folder to S3
+        if: success() && contains(runner.job.status, 'completed')
+        run: |
+          aws s3 sync build/ s3://${{ steps.dynamic_outputs.outputs.S3_BUCKET_NAME }}
+
+  post_build:
+    needs: build
+    if: always()
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      - name: Get Service Info
+        run: kubectl get svc -o wide
