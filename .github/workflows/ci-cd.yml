@@ -37,15 +37,6 @@ jobs:
       - name: Terraform Init
         working-directory: Terraform
         run: terraform init
-        
-      - name: Set environment variables
-        run: |
-          echo "AURORA_USERNAME=${{ env.AURORA_USERNAME }}" >> $GITHUB_ENV
-          echo "AURORA_PASS=${{ env.AURORA_PASS }}" >> $GITHUB_ENV
-          echo "ECR_REPO_NAME=${{ env.ECR_REPO_NAME }}" >> $GITHUB_ENV
-          echo "EKS_REGION=${{ env.EKS_REGION }}" >> $GITHUB_ENV
-          echo "EKS_REPO_NAME=${{ env.EKS_REPO_NAME }}" >> $GITHUB_ENV
-          echo "ENVIRONMENT=${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
 
       - name: Terraform Apply
         working-directory: Terraform
