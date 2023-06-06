@@ -1,18 +1,21 @@
-data "http" "my_ip" {
-  url = "http://checkip.amazonaws.com/"
+data "http" "myip" {
+  url = "http://ipv4.icanhazip.com"
 }
 
 data "aws_ami" "ubuntu" {
-    most_recent = "true"
+
+    most_recent = true
+
     filter {
-        name = "name"
-        values = ["ubuntu/images/hvs-ssd/ubuntu-focal-20.04-amd64-server-*"]
+        name   = "name"
+        values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
     }
 
     filter {
-      name = "virtualization-type"
-      values = ["hvm"]
+        name = "virtualization-type"
+        values = ["hvm"]
     }
+
     owners = ["099720109477"]
 }
 
@@ -45,5 +48,26 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
       type        = "Service"
       identifiers = ["eks.amazonaws.com"]
     }
+  }
+}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_policy_document" "allow_access_from_current_account" {
+  statement {
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    actions = [
+      "s3:GetObject",
+      "s3:ListBucket",
+    ]
+
+    resources = [
+      aws_s3_bucket.react_app_bucket.arn,
+      "${aws_s3_bucket.react_app_bucket.arn}/*",
+    ]
   }
 }

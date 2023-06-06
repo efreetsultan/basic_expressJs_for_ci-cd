@@ -60,7 +60,6 @@ pipeline {
             expression { sh(script: 'npm run test-coverage | grep "Coverage: 100%"', returnStatus: true) == 0 }
         }
     }
-<<<<<<< HEAD
             steps {
                 sh "docker load -i app/hello-jenkins.tar"
                 sh "kubectl apply -f k8s/backend.yaml"
@@ -96,12 +95,6 @@ pipeline {
                 }
             }
         }
-=======
-    steps {
-        sh "docker load -i app/hello-jenkins.tar"
-        sh "kubectl apply -f k8s/app.yaml"
-    }
->>>>>>> 40d89e2f26e53ec3c65dce27da44d3b8f9f13bdf
 }
     }
     post {

@@ -55,4 +55,6 @@ output "private_instance_ip" {
   value = aws_instance.private_instance.private_ip
 }
 
-
+output "current_account_id" {
+  value = data.aws_caller_identity.current.account_id
+}

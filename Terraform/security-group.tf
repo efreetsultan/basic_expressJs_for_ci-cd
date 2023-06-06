@@ -4,12 +4,14 @@ resource "aws_security_group" "aurora_instance_sg" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.private_instance_sg.id]
+    self            = true
   }
 }
+
 
 resource "aws_security_group" "private_instance_sg" {
   name        = "private-instance-security-group"
@@ -32,7 +34,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [data.http.my_ip.body]
+    cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
   }
 }
 
