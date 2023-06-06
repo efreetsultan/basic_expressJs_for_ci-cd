@@ -40,7 +40,7 @@ jobs:
 
       - name: Terraform Apply
         working-directory: Terraform
-        run: terraform apply -auto-approve
+        run: terraform apply -var "ecr_repository_name=${{ env.ECR_REPO_NAME }}" -var "cluster_name=${{ env.EKS_REPO_NAME }}" -var "region=${{ env.EKS_REGION }}" -var "environment=${{ env.ENVIRONMENT }}" -var "db_master_username=${{ secrets.AURORA_USERNAME }}" -var "db_master_password=${{ secrets.AURORA_PASS }}" -auto-approve
 
       - name: Build Docker Image
         working-directory: backend
