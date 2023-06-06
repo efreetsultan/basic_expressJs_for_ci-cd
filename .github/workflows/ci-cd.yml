@@ -48,7 +48,7 @@ jobs:
           docker build -t hello-jenkins .
           docker tag hello-jenkins ${{ steps.dynamic_outputs.outputs.IMAGE_NAME }}
 
-#       - name: Run Tests
+#       - name: Run Tests 
 #         working-directory: test
 #         run: |
 #           docker run --rm -v $(pwd):/app -w /app node:14 npm install
