@@ -25,4 +25,18 @@ resource "aws_eks_node_group" "workers" {
     id      = aws_launch_template.this.id
     version = aws_launch_template.this.latest_version
   }
+
+    lifecycle {
+    ignore_changes = [
+      "scaling_config",
+      "instance_types",
+      "capacity_type",
+      "disk_size",
+      "remote_access",
+      "labels",
+      "tags",
+      "taint",
+      "version",
+    ]
+  }
 }

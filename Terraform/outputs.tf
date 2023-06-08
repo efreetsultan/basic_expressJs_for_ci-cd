@@ -59,8 +59,8 @@ output "current_account_id" {
   value = data.aws_caller_identity.current.account_id
 }
 
-output "nodegroup_arn" {
-  value = aws.eks_node_group.workers.eks_node_group_arn
-}
+# output "nodegroup_arn" {
+#   value = aws_eks_node_group.workers[0].arn
+# }
 
 
