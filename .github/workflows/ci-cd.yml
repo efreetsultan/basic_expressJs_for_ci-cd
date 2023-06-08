@@ -101,6 +101,15 @@ jobs:
               aws eks update-kubeconfig --name eks
               sed "s|ECR_REPOSITORY_URI|${{ env.ECR_URI }}|g" backend.yaml > rendered-backend.yaml
               kubectl apply -f rendered-backend.yaml
+
+      - name: Capture external ip
+        run: |
+          echo "EXT_IP=$(kubectl get svc | awk '{print $4}' | head -n 2 | tail -n 1)" >> "$GITHUB_ENV"
+
+      - name: Add ext ip to react fetch
+        working-directory: client/src
+        run: |
+          sed "s|EXT_IP|${{ env.EXT_IP }}|g" App.js
               
       - name: Build React App
         working-directory: client
@@ -109,14 +118,14 @@ jobs:
           npm run build
 
       - name: Delete S3 Bucket Contents
-        if: success() && contains(runner.job.status, 'completed')
+        # if: success() && contains(runner.job.status, 'completed')
         run: |
           S3_BUCKET_NAME=$(terraform output -raw s3_for_hosting)
           aws s3 rm s3://${{env.S3_NAME}} --recursive
 
 
       - name: Upload Build Folder to S3
-        if: success() && contains(runner.job.status, 'completed')
+        # if: success() && contains(runner.job.status, 'completed')
         run: |
           S3_BUCKET_NAME=$(terraform output -raw s3_for_hosting)
           aws s3 sync build/ s3://${{env.S3_NAME}}
