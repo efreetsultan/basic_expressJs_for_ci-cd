@@ -19,15 +19,15 @@ data "aws_ami" "ubuntu" {
     owners = ["099720109477"]
 }
 
-data "aws_ami" "eks_worker" {
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-*"]
-  }
+# data "aws_ami" "eks_worker" {
+#   filter {
+#     name   = "name"
+#     values = ["amazon-eks-node-*"]
+#   }
 
-  most_recent = true
-  owners      = ["602401143452"]
-}
+#   most_recent = true
+#   owners      = ["602401143452"]
+# }
 
 data "aws_iam_policy_document" "node_assume_role_policy" {
   statement {

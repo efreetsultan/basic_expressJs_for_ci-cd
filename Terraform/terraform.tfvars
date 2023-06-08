@@ -1,0 +1,6 @@
+ecr_repository_name = "ecr"
+cluster_name = "eks"
+region = "eu-west-2"
+environment = "dev"
+db_master_username = "robi"
+db_master_password = "12345678"
