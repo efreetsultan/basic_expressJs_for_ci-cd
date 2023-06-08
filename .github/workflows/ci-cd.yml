@@ -106,14 +106,20 @@ jobs:
         run: |
           echo "EXT_IP=$(kubectl get svc | awk '{print $4}' | head -n 2 | tail -n 1)" >> "$GITHUB_ENV"
 
-      - name: Add ext ip to react fetch
-        working-directory: client/src
-        run: |
-          sed "s|EXT_IP|${{ env.EXT_IP }}|g" App.js
+      # - name: Add ext ip to react fetch
+      #   working-directory: client/src
+      #   run: |
+      #     sed "s|EXT_IP|${{ env.EXT_IP }}|g" App.js
               
-      - name: Build React App
+      # - name: Build React App
+      #   working-directory: client
+      #   run: |
+      #     npm install
+      #     npm run build
+      - name: Modify App.js and Build React App
         working-directory: client
         run: |
+          sed -i "s|EXT_IP|${{ env.EXT_IP }}|g" src/App.js
           npm install
           npm run build
 
