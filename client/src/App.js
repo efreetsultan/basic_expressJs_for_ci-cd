@@ -12,7 +12,7 @@ function App() {
     setError('');
 
     try {
-      const response = await fetch('http://aa62327652a2d4bfd8070b741306dd57-991463055.eu-west-2.elb.amazonaws.com:80/api/save-data', {
+      const response = await fetch('${process.env.REACT_APP_EXT_IP}:80/api/save-data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ function App() {
     setError('');
 
     try {
-      const response = await fetch('http://aa62327652a2d4bfd8070b741306dd57-991463055.eu-west-2.elb.amazonaws.com:80/api/delete-data', {
+      const response = await fetch('${process.env.REACT_APP_EXT_IP}:80/api/delete-data', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ function App() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('http://aa62327652a2d4bfd8070b741306dd57-991463055.eu-west-2.elb.amazonaws.com:80/api/data');
+      const response = await fetch('${process.env.REACT_APP_EXT_IP}:80/api/data');
       if (!response.ok) {
         throw new Error('Error fetching data');
       }
