@@ -81,19 +81,24 @@ jobs:
       #     docker run --rm -v $(pwd):/app -w /app node:14 npm test
       
       - name: Push Docker Image
-        working-directory: app
+        working-directory: backend
         run: |
           docker push ${{ env.ECR_URI }}:latest
-          docker save hello-jenkins -o hello-jenkins.tar
+          # docker save hello-jenkins -o hello-jenkins.tar
           
 
       - name: Deploy to EKS
 #           if: success() && contains(runner.job.status, 'completed')
         working-directory: k8s
         run: |
-              sed "s|ECR_REPOSITORY_URI|${{ steps.capture_ecr_uri.outputs.ECR_URI }}|g" backend.yaml > rendered-backend.yaml
+              sed "s|ECR_REPOSITORY_URI|${{ env.ECR_URI }}|g" backend.yaml > rendered-backend.yaml
               kubectl apply -f rendered-backend.yaml
-
+              
+      - name: Build React App
+        working-directory: client
+        run: |
+          npm install
+          npm run build
 
       - name: Delete S3 Bucket Contents
         if: success() && contains(runner.job.status, 'completed')
@@ -101,11 +106,6 @@ jobs:
           S3_BUCKET_NAME=$(terraform output -raw s3_for_hosting)
           aws s3 rm s3://$S3_BUCKET_NAME --recursive
 
-      - name: Build React App
-        working-directory: client
-        run: |
-          npm install
-          npm run build
 
       - name: Upload Build Folder to S3
         if: success() && contains(runner.job.status, 'completed')
