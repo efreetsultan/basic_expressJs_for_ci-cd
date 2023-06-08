@@ -65,6 +65,7 @@ jobs:
         
       - name: Capture ECR URI
         id: capture_ecr_uri
+        working-directory: Terraform
         run: |
           echo "ECR_URI=$(terraform output -raw ecr_repository_url_server)"
         
