@@ -125,6 +125,7 @@ jobs:
 
 
       - name: Upload Build Folder to S3
+        working-directory: client
         # if: success() && contains(runner.job.status, 'completed')
         run: |
           S3_BUCKET_NAME=$(terraform output -raw s3_for_hosting)
