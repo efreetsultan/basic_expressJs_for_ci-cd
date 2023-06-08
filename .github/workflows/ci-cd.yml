@@ -54,15 +54,18 @@ jobs:
           TF_VAR_db_master_password: ${{ secrets.AURORA_PASS }}
         
       - name: Capture ECR URI
-        id: dynamic_outputs
+        id: capture_ecr_uri
         run: |
-          echo "##[set-env name=IMAGE_NAME]$(terraform output -raw ecr_repository_uri)"
+          echo "##[set-env name=ECR_URI]$(terraform output -raw ecr_repository_url_server)"
+      - name: Use the ECR URI (protected by a mask)
+        run: |
+          echo "The ECR URI is ${{ env.ECR_URI }}"
     
       - name: Build Docker Image
         working-directory: backend
         run: |
           docker build -t hello-jenkins .
-          docker tag hello-jenkins ${{ env.IMAGE_NAME }}
+          docker tag hello-jenkins ${{ env.ECR_URI }}
       
       # - name: Run Tests 
       #   working-directory: test
@@ -73,7 +76,7 @@ jobs:
       - name: Push Docker Image
         working-directory: app
         run: |
-          docker push ${{ env.IMAGE_NAME }}
+          docker push ${{ env.ECR_URI }}
           docker save hello-jenkins -o hello-jenkins.tar
           
 
@@ -81,7 +84,7 @@ jobs:
 #           if: success() && contains(runner.job.status, 'completed')
         working-directory: k8s
         run: |
-              sed "s|ECR_REPOSITORY_URI|${{ steps.dynamic_outputs.outputs.IMAGE_NAME }}|g" backend.yaml > rendered-backend.yaml
+              sed "s|ECR_REPOSITORY_URI|${{ steps.capture_ecr_uri.outputs.ECR_URI }}|g" backend.yaml > rendered-backend.yaml
               kubectl apply -f rendered-backend.yaml
 
 
