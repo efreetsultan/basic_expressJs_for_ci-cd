@@ -38,9 +38,9 @@ jobs:
         working-directory: Terraform
         run: terraform init
 
-      - name: Terraform import
-        working-directory: Terraform
-        run: terraform import aws_eks_node_group.worker $(terraform output -raw nodegroup_arn)
+      # - name: Terraform import
+      #   working-directory: Terraform
+      #   run: terraform import aws_eks_node_group.worker $(terraform output -raw nodegroup_arn)
 
       - name: Terraform Apply
         working-directory: Terraform
