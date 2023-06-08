@@ -38,6 +38,10 @@ jobs:
         working-directory: Terraform
         run: terraform init
 
+      - name: Terraform import
+        working-directory: Terraform
+        run: terraform import aws_eks_node_group.worker $(terraform output -raw nodegroup_arn)
+
       - name: Terraform Apply
         working-directory: Terraform
         run: terraform apply -auto-approve
@@ -51,26 +55,27 @@ jobs:
         
       - name: Capture ECR URI
         id: dynamic_outputs
-        run: echo "::set-output name=IMAGE_NAME::$(terraform output -raw ecr_repository_uri)"
-
+        run: |
+          echo "##[set-env name=IMAGE_NAME]$(terraform output -raw ecr_repository_uri)"
+    
       - name: Build Docker Image
         working-directory: backend
         run: |
-            docker build -t hello-jenkins .
-            docker tag hello-jenkins ${{ steps.dynamic_outputs.outputs.IMAGE_NAME }}
-
-
-#       - name: Run Tests 
-#         working-directory: test
-#         run: |
-#           docker run --rm -v $(pwd):/app -w /app node:14 npm install
-#           docker run --rm -v $(pwd):/app -w /app node:14 npm test
-
+          docker build -t hello-jenkins .
+          docker tag hello-jenkins ${{ env.IMAGE_NAME }}
+      
+      # - name: Run Tests 
+      #   working-directory: test
+      #   run: |
+      #     docker run --rm -v $(pwd):/app -w /app node:14 npm install
+      #     docker run --rm -v $(pwd):/app -w /app node:14 npm test
+      
       - name: Push Docker Image
         working-directory: app
         run: |
-          docker push ${{ steps.dynamic_outputs.outputs.IMAGE_NAME }}
+          docker push ${{ env.IMAGE_NAME }}
           docker save hello-jenkins -o hello-jenkins.tar
+          
 
       - name: Deploy to EKS
 #           if: success() && contains(runner.job.status, 'completed')

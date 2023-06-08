@@ -58,3 +58,9 @@ output "private_instance_ip" {
 output "current_account_id" {
   value = data.aws_caller_identity.current.account_id
 }
+
+output "nodegroup_arn" {
+  value = aws.eks_node_group.workers.nodegroup_arn
+}
+
+
