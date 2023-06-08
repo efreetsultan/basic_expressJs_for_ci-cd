@@ -33,8 +33,18 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Check Terraform Initialization
+        id: check_terraform_init
+        run: |
+          if aws s3 ls s3://somebucketformythings/terraform.tfstate; then
+            echo "::set-output name=initialized::true"
+          else
+            echo "::set-output name=initialized::false"
+          fi
 
       - name: Terraform Init
+        if: steps.check_terraform_init.outputs.initialized != 'true'
         working-directory: Terraform
         run: terraform init
 
@@ -56,11 +66,8 @@ jobs:
       - name: Capture ECR URI
         id: capture_ecr_uri
         run: |
-          echo "##[set-env name=ECR_URI]$(terraform output -raw ecr_repository_url_server)"
-      - name: Use the ECR URI (protected by a mask)
-        run: |
-          echo "The ECR URI is ${{ env.ECR_URI }}"
-    
+          echo "ECR_URI=$(terraform output -raw ecr_repository_url_server)"
+        
       - name: Build Docker Image
         working-directory: backend
         run: |
