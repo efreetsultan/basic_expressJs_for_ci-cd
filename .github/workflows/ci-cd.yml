@@ -68,6 +68,12 @@ jobs:
         working-directory: Terraform
         run: |
           echo "ECR_URI=$(terraform output -raw ecr_repository_url_server)" >> "$GITHUB_ENV"
+
+      - name: Capture S3_NAME
+        id: capture_s3_name
+        working-directory: Terraform
+        run: |
+          echo "S3_NAME=$(terraform output -raw client_bucket)" >> "$GITHUB_ENV"
         
       - name: Build Docker Image
         working-directory: backend
@@ -83,6 +89,7 @@ jobs:
       - name: Push Docker Image
         working-directory: backend
         run: |
+          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin 837009352646.dkr.ecr.eu-west-2.amazonaws.com
           docker push ${{ env.ECR_URI }}:latest
           # docker save hello-jenkins -o hello-jenkins.tar
           
@@ -91,6 +98,7 @@ jobs:
 #           if: success() && contains(runner.job.status, 'completed')
         working-directory: k8s
         run: |
+              aws eks update-kubeconfig --name eks
               sed "s|ECR_REPOSITORY_URI|${{ env.ECR_URI }}|g" backend.yaml > rendered-backend.yaml
               kubectl apply -f rendered-backend.yaml
               
@@ -104,14 +112,14 @@ jobs:
         if: success() && contains(runner.job.status, 'completed')
         run: |
           S3_BUCKET_NAME=$(terraform output -raw s3_for_hosting)
-          aws s3 rm s3://$S3_BUCKET_NAME --recursive
+          aws s3 rm s3://${{env.S3_NAME}} --recursive
 
 
       - name: Upload Build Folder to S3
         if: success() && contains(runner.job.status, 'completed')
         run: |
           S3_BUCKET_NAME=$(terraform output -raw s3_for_hosting)
-          aws s3 sync build/ s3://$S3_BUCKET_NAME
+          aws s3 sync build/ s3://${{env.S3_NAME}}
 
   post_build:
     needs: build

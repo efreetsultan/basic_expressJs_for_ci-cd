@@ -63,4 +63,8 @@ output "current_account_id" {
 #   value = aws_eks_node_group.workers[0].arn
 # }
 
+output "client_bucket" {
+  value = aws_s3_bucket.react_app_bucket.bucket
+}
+
 
