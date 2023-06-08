@@ -34,17 +34,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
       
-      - name: Check Terraform Initialization
-        id: check_terraform_init
-        run: |
-          if aws s3 ls s3://somebucketformythings/terraform.tfstate; then
-            echo "::set-output name=initialized::true"
-          else
-            echo "::set-output name=initialized::false"
-          fi
+      # - name: Check Terraform Initialization
+      #   id: check_terraform_init
+      #   run: |
+      #     if aws s3 ls s3://somebucketformythings/terraform.tfstate; then
+      #       echo "{initialized}={true}" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "{initialized}=f{alse}" >> $GITHUB_OUTPUT
+      #     fi
 
       - name: Terraform Init
-        if: steps.check_terraform_init.outputs.initialized != 'true'
+        # if: steps.check_terraform_init.outputs.initialized != 'true'
         working-directory: Terraform
         run: terraform init
 
