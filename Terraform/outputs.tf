@@ -28,6 +28,11 @@ output "ecr_repository_name_client" {
   description = "The name of the ECR repository."
 }
 
+output "ecr_repository_url" {
+  value = aws_ecr_repository.repo1.repository_url
+}
+
+
 output "vpc_id" {
   value       = aws_vpc.main.id
   description = "The ID of the VPC."

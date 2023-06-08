@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: hello-jenkins-backend
-          image: 837009352646.dkr.ecr.eu-west-2.amazonaws.com/ecr_server:latest
+          image: 837009352646.dkr.ecr.eu-west-2.amazonaws.com/ecr_client
           ports:
             - containerPort: 3003
       imagePullSecrets:
