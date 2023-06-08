@@ -33,24 +33,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      
-      # - name: Check Terraform Initialization
-      #   id: check_terraform_init
-      #   run: |
-      #     if aws s3 ls s3://somebucketformythings/terraform.tfstate; then
-      #       echo "{initialized}={true}" >> $GITHUB_OUTPUT
-      #     else
-      #       echo "{initialized}=f{alse}" >> $GITHUB_OUTPUT
-      #     fi
 
       - name: Terraform Init
-        # if: steps.check_terraform_init.outputs.initialized != 'true'
         working-directory: Terraform
         run: terraform init
-
-      # - name: Terraform import
-      #   working-directory: Terraform
-      #   run: terraform import aws_eks_node_group.worker $(terraform output -raw nodegroup_arn)
 
       - name: Terraform Apply
         working-directory: Terraform
