@@ -71,3 +71,10 @@ data "aws_iam_policy_document" "allow_access_from_current_account" {
     ]
   }
 }
+
+data "aws_security_group" "eks_node_group_sg" {
+  filter {
+    name   = "group-name"
+    values = ["eks-cluster-sg-eks-*"]
+  }
+}

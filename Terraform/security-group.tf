@@ -4,14 +4,15 @@ resource "aws_security_group" "aurora_instance_sg" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.private_instance_sg.id]
-    self            = true
+    from_port                = 5432
+    to_port                  = 5432
+    protocol                 = "tcp"
+    security_groups          = [
+      aws_security_group.private_instance_sg.id,
+      data.aws_security_group.eks_node_group_sg.id
+    ]
   }
 }
-
 
 resource "aws_security_group" "private_instance_sg" {
   name        = "private-instance-security-group"

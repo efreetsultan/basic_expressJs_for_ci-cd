@@ -28,15 +28,15 @@ resource "aws_eks_node_group" "workers" {
 
     lifecycle {
     ignore_changes = [
-      "scaling_config",
-      "instance_types",
-      "capacity_type",
-      "disk_size",
-      "remote_access",
-      "labels",
-      "tags",
-      "taint",
-      "version",
+      scaling_config,
+      instance_types,
+      capacity_type,
+      disk_size,
+      remote_access,
+      labels,
+      tags,
+      taint,
+      version,
     ]
   }
 }
