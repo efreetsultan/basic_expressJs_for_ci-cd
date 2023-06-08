@@ -72,8 +72,7 @@ jobs:
       - name: Build Docker Image
         working-directory: backend
         run: |
-          docker build -t hello-jenkins .
-          docker tag hello-jenkins ${{ env.ECR_URI }}
+          docker build -t ${{ env.ECR_URI }} .
       
       # - name: Run Tests 
       #   working-directory: test
@@ -84,7 +83,7 @@ jobs:
       - name: Push Docker Image
         working-directory: app
         run: |
-          docker push ${{ env.ECR_URI }}
+          docker push ${{ env.ECR_URI }}:latest
           docker save hello-jenkins -o hello-jenkins.tar
           
 
