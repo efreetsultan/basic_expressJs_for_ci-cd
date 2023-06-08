@@ -51,7 +51,7 @@ function App() {
         throw new Error('Error deleting data');
       }
 
-      const data = await response.json();
+      // const data = await response.json();
       if (response.status === 200) {
         setResponseData(responseData.filter((item) => item.input_value !== inputValue));
         setInputValue('');
