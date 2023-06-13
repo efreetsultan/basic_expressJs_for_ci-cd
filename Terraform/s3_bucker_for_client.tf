@@ -32,4 +32,8 @@ resource "aws_s3_bucket_website_configuration" "example" {
 resource "aws_s3_bucket_policy" "example-policy" {
   bucket = aws_s3_bucket.react_app_bucket.id
   policy = data.aws_iam_policy_document.allow_access_from_current_account.json
+
+  depends_on = [
+    aws_s3_bucket.react_app_bucket
+  ]
 }

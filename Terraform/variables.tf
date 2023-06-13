@@ -115,5 +115,4 @@ variable "db_master_password" {
 
 variable "s3_client" {
   description = "The name of the s3 bucket used for hosting the client"
-  default = "abucketforreact"
 }

@@ -1,8 +1,8 @@
 # Basic_ExpressJS_For_Ci-Cd
 
-This is a basic ExpressJS application that has one endpoint that returns a string.
+This is basic application, with ExpressJs backend and React frontend. AWS infrastructure created with Terraform. Deployed with Kubernetes and S3 web hosting
 
-### Used technologies:<br>
+## Used technologies:<br>
 
 
 |  |  |
@@ -12,9 +12,9 @@ This is a basic ExpressJS application that has one endpoint that returns a strin
 | Docker | [![My Skills](https://skillicons.dev/icons?i=docker)](https://skillicons.dev) |
 | Git | [![My Skills](https://skillicons.dev/icons?i=git)](https://skillicons.dev) |
 | Bash scripting | [![My Skills](https://skillicons.dev/icons?i=bash)](https://skillicons.dev) |
-| Jenkins | [![My Skills](https://skillicons.dev/icons?i=jenkins)](https://skillicons.dev) |
+| GitHub Actions | [![My Skills](https://skillicons.dev/icons?i=githubactions)](https://skillicons.dev) |
 | Kubernetes | [![My Skills](https://skillicons.dev/icons?i=kubernetes)](https://skillicons.dev) |
-| Terraform | [![My Skills](https://skillicons.dev/icons?i=terraform)](https://skillicons.dev) |
+| Terraform |  |
 
 ## Getting Started
 
@@ -42,60 +42,46 @@ Before you begin, make sure you have the following:
    npm install
    ```
 
-3. Create the S3 bucket:
+3. Save your AWS credentials as secrets in GitHub:
+
+   - Go to your repository on GitHub.
+   - Navigate to **Settings** > **Secrets**.
+   - Click on **New repository secret**.
+   - Add your AWS access key as the secret name and the corresponding secret value.
+   - Repeat the process for your AWS secret access key.
+
+4. Create the S3 bucket:
 
    ```
-   source env.sh
-   sh s3backend.sh
+   sh s3backend.sh <bucketname> <region>
    ```
 
-   This creates an S3 bucket that is used to store the Terraform state.
+   This script creates an S3 bucket for the backend. Replace `<bucketname>` with the desired name for your bucket and `<region>` with the AWS region where you want to create the bucket.
 
-4. Create the DynamoDB table:
+5. Rewrite the placeholder names:
 
-   ```
-   terraform init -backend-config="bucket=<app-name>-<env-name>" -backend-config="dynamodb_table=<app-name>-<env-name>"
-   terraform apply -var app_name=<app-name> -var env_name=<env-name>
-   ```
+   - In `dynamodb.tf`, replace the placeholder `<name>` with the desired name for your DynamoDB table.
+   - In `s3backend.tf`, replace the placeholder `<bucket>` with the name of the S3 bucket you created in the previous step.
 
-   This creates a DynamoDB table that is used to lock the Terraform state. This also creates an ECR repository, an EKS cluster, an IAM role for the worker nodes, and other resources needed to deploy the application.
+6. Set the necessary variables in `terraform.tfvars`:
 
-5. Build and push the Docker image:
+   - Modify the values in `terraform.tfvars` according to your requirements.
 
-   ```
-   docker build -t <aws-account-id>.dkr.ecr.<region>.amazonaws.com/<app-name>:<tag> .
-   aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws-account-id>.dkr.ecr.<region>.amazonaws.com
-   docker push <aws-account-id>.dkr.ecr.<region>.amazonaws.com/<app-name>:<tag>
-   ```
+7. Commit and push the changes to your repository.
 
-   This builds a Docker image for the application, logs in to the ECR repository, and pushes the image to the repository.
+Now you have set up the necessary configurations and scripts in your repository. GitHub Actions will automatically detect your project's configuration and run the CI/CD pipeline based on the available conventions and triggers.
 
-6. Deploy the application:
+During the CI/CD pipeline, the following actions will be performed:
 
-   ```
-   kubectl apply -f k8s/
-   ```
+- Installing dependencies
+- Configuring AWS credentials
+- Creating the S3 bucket
+- Configuring Terraform
+- Applying Terraform changes
+- Building and pushing the Docker image
+- Deploying the application
+- Running unit tests
 
-   This deploys the application to the EKS cluster using the Kubernetes manifests in the `k8s/` directory.
+GitHub Actions will handle these steps based on the detected configurations and events such as commits to the `main` branch.
 
-7. Test the application:
-
-   ```
-   npm test
-   ```
-
-   This runs the unit tests for the application.
-
-## CI/CD Pipeline
-
-This project also includes a Jenkinsfile that sets up a CI/CD pipeline for the application. The pipeline is triggered on commits to the `main` branch, and it performs the following steps:
-
-1. Checkout the code from the repository.
-2. Create the S3 bucket using the `creates3.sh` script.
-3. Create the DynamoDB table and AWS resources using Terraform.
-4. Build and push the Docker image.
-5. Deploy the application to the EKS cluster.
-6. Run the unit tests.
-7. If the tests pass, deploy the application to the production environment.
-
-To set up the pipeline, create a Jenkins job that uses the `Jenkinsfile` as its pipeline script. Make sure to set the necessary environmental variables for your AWS account and other configuration values.
+Ensure that you have the appropriate permissions and access control in place for the GitHub Actions workflow to interact with your AWS resources and perform the necessary operations.
